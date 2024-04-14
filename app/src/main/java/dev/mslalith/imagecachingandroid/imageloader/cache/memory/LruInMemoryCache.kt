@@ -2,8 +2,9 @@ package dev.mslalith.imagecachingandroid.imageloader.cache.memory
 
 import android.graphics.Bitmap
 import androidx.collection.LruCache
+import javax.inject.Inject
 
-class LruInMemoryCache : InMemoryCache {
+class LruInMemoryCache @Inject constructor() : InMemoryCache {
 
     // TODO IF TIME PERMITS: configure size from available memory
     private val cacheMap = LruCache<String, Bitmap>(maxSize = 200)
