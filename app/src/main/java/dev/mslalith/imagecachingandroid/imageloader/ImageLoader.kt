@@ -5,9 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.collection.LruCache
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import dev.mslalith.imagecachingandroid.imageloader.cache.disk.DiskCache
+import dev.mslalith.imagecachingandroid.imageloader.cache.memory.InMemoryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -15,13 +16,28 @@ import java.net.URL
 import java.security.MessageDigest
 
 class ImageLoader(
-    private val context: Context
+    private val context: Context,
+    private val inMemoryCache: InMemoryCache,
+    private val diskCache: DiskCache
 ) {
-    // TODO IF TIME PERMITS: configure size from available memory
-    private val inMemoryCacheMap = LruCache<String, Bitmap>(maxSize = 20)
     private val messageDigest = MessageDigest.getInstance("MD5")
 
-    fun getCachedBitmap(imageRequest: ImageRequest): Bitmap? = inMemoryCacheMap[imageRequest.key()]
+    fun getCachedBitmap(imageRequest: ImageRequest): Bitmap? {
+        val key = imageRequest.key()
+
+        // check in-memory
+        var bitmap = inMemoryCache.get(key)
+        if (bitmap != null) return bitmap
+
+        // check disk
+        bitmap = diskCache.get(key)
+        if (bitmap != null) {
+            inMemoryCache.put(key, bitmap)
+            return bitmap
+        }
+
+        return null
+    }
 
     suspend fun execute(imageRequest: ImageRequest): Bitmap {
         return when (imageRequest) {
@@ -30,7 +46,9 @@ class ImageLoader(
             }
             is ImageRequest.Drawable -> imageRequest.toBitmap()
         }.also {
-            inMemoryCacheMap.put(imageRequest.key(), it)
+            val key = imageRequest.key()
+            inMemoryCache.put(key, it)
+            diskCache.put(key, it)
         }
     }
 

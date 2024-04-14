@@ -91,7 +91,7 @@ dependencies {
 
 fun loadSecretProperties(): Properties {
     val secretPropertiesFile = rootProject.file("secret.properties")
-    if (secretPropertiesFile.exists().not()) error("secret.properties file is required")
+    if (secretPropertiesFile.exists().not()) error("secret.properties file is required at the project root directory")
 
     val localProperties = Properties().apply { load(FileInputStream(secretPropertiesFile)) }
     if (localProperties["pixabay_api_key"] == null) error("pixabay_api_key field is required in secret.properties")
