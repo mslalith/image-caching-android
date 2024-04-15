@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.mslalith.imagecachingandroid.data.repo.ImagesRepository
-import dev.mslalith.imagecachingandroid.data.repo.RemoteImagesRepository
+import dev.mslalith.imagecachingandroid.data.repo.ImagesRepositoryImpl
 import javax.inject.Singleton
 
 @Module
@@ -14,7 +14,7 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindRemoteImagesRepository(
-        remoteImagesRepository: RemoteImagesRepository
+    abstract fun bindImagesRepository(
+        imagesRepositoryImpl: ImagesRepositoryImpl
     ): ImagesRepository
 }

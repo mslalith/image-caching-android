@@ -1,6 +1,5 @@
 package dev.mslalith.imagecachingandroid.data.model.remote
 
-import dev.mslalith.imagecachingandroid.data.dto.Image
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,10 +7,20 @@ import kotlinx.serialization.Serializable
 data class ImageResponse(
     val id: Long,
     @SerialName("largeImageURL")
-    val imageURL: String
-)
-
-fun ImageResponse.toImage() = Image(
-    id = id,
-    imageURL = imageURL
+    val imageURL: String,
+    val pageURL: String,
+    val imageWidth: Int,
+    val imageHeight: Int,
+    val imageSize: Int,
+    val views: Int,
+    val downloads: Int,
+    val collections: Int,
+    val likes: Int,
+    val comments: Int,
+    @SerialName("user_id")
+    val userId: Int,
+    @SerialName("user")
+    val userName: String,
+    @SerialName("userImageURL")
+    val userImageURL: String
 )

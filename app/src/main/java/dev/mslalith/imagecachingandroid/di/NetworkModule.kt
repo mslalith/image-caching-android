@@ -1,9 +1,12 @@
 package dev.mslalith.imagecachingandroid.di
 
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.mslalith.imagecachingandroid.data.api.ImagesApi
+import dev.mslalith.imagecachingandroid.data.api.ImagesApiImpl
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.HttpTimeout
@@ -14,7 +17,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object NetworkProvidesModule {
 
     @Provides
     @Singleton
@@ -36,4 +39,15 @@ object NetworkModule {
             socketTimeoutMillis = timeout
         }
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class NetworkBindsModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindImagesApi(
+        imagesApiImpl: ImagesApiImpl
+    ): ImagesApi
 }

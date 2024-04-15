@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.mslalith.imagecachingandroid.data.dto.Image
-import dev.mslalith.imagecachingandroid.domain.SearchImagesUseCase
+import dev.mslalith.imagecachingandroid.data.repo.ImagesRepository
 import dev.mslalith.imagecachingandroid.screens.detail.ListingUiState
+import dev.mslalith.imagecachingandroid.util.NetworkMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val searchImagesUseCase: SearchImagesUseCase
+    private val imagesRepository: ImagesRepository,
+    private val networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
     private val dummyImages = listOf(
@@ -38,7 +40,15 @@ class MainActivityViewModel @Inject constructor(
     ).mapIndexed { index, url ->
         Image(
             id = index.toLong(),
-            imageURL = url
+            imageURL = url,
+            views = 2774,
+            downloads = 8428,
+            collections = 9479,
+            likes = 3055,
+            comments = 8493,
+            userId = 8470,
+            userName = "Lori Bender",
+            userImageURL = "http://www.bing.com/search?q=te"
         )
     }
 
@@ -54,12 +64,18 @@ class MainActivityViewModel @Inject constructor(
     private var lastSeenPage = 1
 
     init {
+        imagesRepository.imagesFlow
+            .onEach { _listingUiState.value = ListingUiState.Loaded(images = it) }
+            .flowOn(Dispatchers.IO)
+            .launchIn(viewModelScope)
+
         _searchQuery
             .debounce(timeoutMillis = 800)
             .onEach {
-                _listingUiState.value = ListingUiState.Loading
-                val images = searchImagesUseCase(query = it, page = 1)
-                _listingUiState.value = ListingUiState.Loaded(images = images)
+                if (networkMonitor.isDeviceOnline()) {
+                    _listingUiState.value = ListingUiState.Loading
+                    imagesRepository.fetchImages(query = it, page = 1)
+                }
             }
             .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)

@@ -11,3 +11,9 @@ If above is not provided, Build will fail with proper instructions to do the abo
 ## Run
 - Ensure above steps are completed.
 - Run app
+
+## TODO
+- [x] Add Disk caching
+- [x] Search images
+- [ ] Pagination
+- [ ] Settings
