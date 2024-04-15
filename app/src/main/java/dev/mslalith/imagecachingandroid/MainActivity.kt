@@ -33,13 +33,17 @@ class MainActivity : ComponentActivity() {
                     startDestination = Screen.Listing.route
                 ) {
                     composable(route = Screen.Listing.route) {
-                        val images by viewModel.imagesList.collectAsStateWithLifecycle()
+                        val uiState by viewModel.listingUiState.collectAsStateWithLifecycle()
+                        val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+
                         ListingScreen(
-                            images = images,
+                            uiState = uiState,
+                            searchQuery = searchQuery,
                             onItemClick = {
                                 viewModel.onImageClick(image = it)
                                 navController.navigate(Screen.Detail.route)
-                            }
+                            },
+                            onSearchQueryChange = viewModel::onSearchQueryChange
                         )
                     }
                     composable(

@@ -5,12 +5,18 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.mslalith.imagecachingandroid.data.dto.Image
 import dev.mslalith.imagecachingandroid.domain.SearchImagesUseCase
+import dev.mslalith.imagecachingandroid.screens.detail.ListingUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val searchImagesUseCase: SearchImagesUseCase
@@ -36,20 +42,31 @@ class MainActivityViewModel @Inject constructor(
         )
     }
 
-    private val _imagesList = MutableStateFlow<List<Image>>(value = emptyList())
-    val imagesList = _imagesList.asStateFlow()
+    private val _listingUiState = MutableStateFlow<ListingUiState>(value = ListingUiState.Loading)
+    val listingUiState = _listingUiState.asStateFlow()
 
     private val _selectedImage = MutableStateFlow<Image?>(value = null)
     val selectedImage = _selectedImage.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow(value = "")
+    val searchQuery = _searchQuery.asStateFlow()
+
     private var lastSeenPage = 1
 
     init {
-        viewModelScope.launch {
-            // initially search for the first page
-            val images = searchImagesUseCase(query = "", page = 1)
-            _imagesList.update { images }
-        }
+        _searchQuery
+            .debounce(timeoutMillis = 800)
+            .onEach {
+                _listingUiState.value = ListingUiState.Loading
+                val images = searchImagesUseCase(query = it, page = 1)
+                _listingUiState.value = ListingUiState.Loaded(images = images)
+            }
+            .flowOn(Dispatchers.IO)
+            .launchIn(viewModelScope)
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
     }
 
     fun onImageClick(image: Image) {
