@@ -59,7 +59,7 @@ private fun ImageItem(
 ) {
     val painter = rememberAsyncImagePainter(
         imageRequest = ImageRequest.Network(
-            url = image.imageURL,
+            url = image.imageUrl,
             errorId = R.drawable.ic_image_broken
         ),
         placeholder = R.drawable.ic_image_placeholder

@@ -28,7 +28,7 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "PIXABAY_API_KEY", "\"" + secretProperties["pixabay_api_key"].toString() + "\"")
+        buildConfigField("String", "PEXELS_API_KEY", "\"" + secretProperties["pexels_api_key"].toString() + "\"")
     }
 
     buildTypes {
@@ -76,14 +76,20 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
@@ -101,7 +107,7 @@ fun loadSecretProperties(): Properties {
     if (secretPropertiesFile.exists().not()) error("secret.properties file is required at the project root directory")
 
     val localProperties = Properties().apply { load(FileInputStream(secretPropertiesFile)) }
-    if (localProperties["pixabay_api_key"] == null) error("pixabay_api_key field is required in secret.properties")
+    if (localProperties["pexels_api_key"] == null) error("pexels_api_key field is required in secret.properties")
 
     return localProperties
 }

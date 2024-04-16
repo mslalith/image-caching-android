@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
 import dev.mslalith.imagecachingandroid.screens.Screen
 import dev.mslalith.imagecachingandroid.screens.detail.DetailScreen
@@ -33,11 +34,11 @@ class MainActivity : ComponentActivity() {
                     startDestination = Screen.Listing.route
                 ) {
                     composable(route = Screen.Listing.route) {
-                        val uiState by viewModel.listingUiState.collectAsStateWithLifecycle()
+                        val pagingItems = viewModel.imagesPagingData.collectAsLazyPagingItems()
                         val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
                         ListingScreen(
-                            uiState = uiState,
+                            pagingItems = pagingItems,
                             searchQuery = searchQuery,
                             onItemClick = {
                                 viewModel.onImageClick(image = it)

@@ -2,7 +2,7 @@
 
 ## Build
 - Create `secret.properties` file at project root directory.
-- Add Pixabay API Key (`pixabay_api_key=123456789`).
+- Add Pexels API Key (`pexels_api_key=123456789`).
 
 If above is not provided, Build will fail with proper instructions to do the above.
 
@@ -15,5 +15,5 @@ If above is not provided, Build will fail with proper instructions to do the abo
 ## TODO
 - [x] Add Disk caching
 - [x] Search images
-- [ ] Pagination
+- [x] Pagination
 - [ ] Settings

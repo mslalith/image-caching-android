@@ -2,11 +2,10 @@ package dev.mslalith.imagecachingandroid
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.mslalith.imagecachingandroid.data.dto.Image
 import dev.mslalith.imagecachingandroid.data.repo.ImagesRepository
-import dev.mslalith.imagecachingandroid.screens.detail.ListingUiState
-import dev.mslalith.imagecachingandroid.util.NetworkMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +19,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val imagesRepository: ImagesRepository,
-    private val networkMonitor: NetworkMonitor
+    private val imagesRepository: ImagesRepository
 ) : ViewModel() {
 
     private val dummyImages = listOf(
@@ -40,20 +38,18 @@ class MainActivityViewModel @Inject constructor(
     ).mapIndexed { index, url ->
         Image(
             id = index.toLong(),
-            imageURL = url,
-            views = 2774,
-            downloads = 8428,
-            collections = 9479,
-            likes = 3055,
-            comments = 8493,
-            userId = 8470,
-            userName = "Lori Bender",
-            userImageURL = "http://www.bing.com/search?q=te"
+            width = 8686,
+            height = 5342,
+            photographerName = "Opal Ryan",
+            photographerUrl = "https://duckduckgo.com/?q=viverra",
+            photographerId = 2807,
+            imageUrl = url,
+            liked = false,
+            alt = ""
         )
     }
 
-    private val _listingUiState = MutableStateFlow<ListingUiState>(value = ListingUiState.Loading)
-    val listingUiState = _listingUiState.asStateFlow()
+    val imagesPagingData = imagesRepository.imagesFlow.cachedIn(scope = viewModelScope)
 
     private val _selectedImage = MutableStateFlow<Image?>(value = null)
     val selectedImage = _selectedImage.asStateFlow()
@@ -64,19 +60,9 @@ class MainActivityViewModel @Inject constructor(
     private var lastSeenPage = 1
 
     init {
-        imagesRepository.imagesFlow
-            .onEach { _listingUiState.value = ListingUiState.Loaded(images = it) }
-            .flowOn(Dispatchers.IO)
-            .launchIn(viewModelScope)
-
         _searchQuery
             .debounce(timeoutMillis = 800)
-            .onEach {
-                if (networkMonitor.isDeviceOnline()) {
-                    _listingUiState.value = ListingUiState.Loading
-                    imagesRepository.fetchImages(query = it, page = 1)
-                }
-            }
+            .onEach { imagesRepository.updateSearchQuery(query = it) }
             .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
     }

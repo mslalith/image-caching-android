@@ -32,7 +32,7 @@ object NetworkProvidesModule {
             )
         }
 
-        val timeout = 15_000L
+        val timeout = 60_000L
         install(plugin = HttpTimeout) {
             requestTimeoutMillis = timeout
             connectTimeoutMillis = timeout
