@@ -10,8 +10,9 @@ import androidx.core.graphics.drawable.toBitmap
 import dev.mslalith.imagecachingandroid.imageloader.cache.disk.DiskCache
 import dev.mslalith.imagecachingandroid.imageloader.cache.memory.InMemoryCache
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.net.URL
 import java.security.MessageDigest
 
@@ -21,6 +22,7 @@ class ImageLoader(
     private val diskCache: DiskCache
 ) {
     private val messageDigest = MessageDigest.getInstance("MD5")
+    private val imageDownloadLock = Semaphore(permits = 10)
 
     fun getCachedBitmap(imageRequest: ImageRequest): Bitmap? {
         val key = imageRequest.key()
@@ -65,10 +67,12 @@ class ImageLoader(
 
     private suspend fun ImageRequest.Network.toBitmap(): Bitmap? = withContext(Dispatchers.IO) {
         try {
-            URL(url).openStream().use { inputStream ->
-                BitmapFactory.decodeStream(inputStream)
+            imageDownloadLock.withPermit {
+                URL(url).openStream().use { inputStream ->
+                    BitmapFactory.decodeStream(inputStream)
+                }
             }
-        } catch (ex: IOException) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
             null
         }

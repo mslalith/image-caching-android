@@ -15,7 +15,7 @@ class FileSystemDiskCache @Inject constructor(
 ) : DiskCache {
 
     private val cacheDir = File(context.cacheDir, "images")
-    private val writeLock = Semaphore(permits = 50)
+    private val writeLock = Semaphore(permits = 20)
 
     init {
         if (!cacheDir.exists()) cacheDir.mkdirs()

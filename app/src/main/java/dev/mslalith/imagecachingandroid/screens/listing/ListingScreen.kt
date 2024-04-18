@@ -4,24 +4,32 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -36,6 +44,7 @@ import dev.mslalith.imagecachingandroid.R
 import dev.mslalith.imagecachingandroid.data.dto.Image
 import dev.mslalith.imagecachingandroid.imageloader.ImageRequest
 import dev.mslalith.imagecachingandroid.imageloader.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -46,40 +55,29 @@ fun ListingScreen(
     onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val gridState = rememberLazyStaggeredGridState()
+    val scope = rememberCoroutineScope()
+
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    scope.launch {
+                        gridState.animateScrollBy(2000f)
+                    }
+                }
+            ) {
+                Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
+            }
+        }
     ) { innerPadding ->
-        val gridState = rememberLazyStaggeredGridState()
 
         Column(
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
                 .padding(horizontal = 12.dp),
         ) {
-//            SearchBar(
-//                modifier = Modifier.fillMaxWidth(),
-//                query = searchQuery,
-//                onQueryChange = onSearchQueryChange,
-//                onSearch = { onSearchQueryChange(searchQuery) },
-//                active = false,
-//                onActiveChange = {},
-//                leadingIcon = {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.ic_search),
-//                        contentDescription = null,
-//                    )
-//                },
-//                trailingIcon = {
-//                    IconButton(onClick = {}) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.ic_settings),
-//                            contentDescription = null,
-//                        )
-//                    }
-//                },
-//                content = {}
-//            )
-
             when (pagingItems.loadState.refresh) {
                 is LoadState.Error -> Unit
                 is LoadState.NotLoading -> Unit
@@ -114,6 +112,17 @@ fun ListingScreen(
 //                            onItemClick = onItemClick,
 //                            modifier = Modifier.animateItemPlacement()
 //                        )
+                    }
+                }
+
+                item {
+                    if (pagingItems.loadState.append is LoadState.Loading) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }

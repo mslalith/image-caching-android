@@ -49,7 +49,9 @@ class MainActivityViewModel @Inject constructor(
         )
     }
 
-    val imagesPagingData = imagesRepository.imagesFlow.cachedIn(scope = viewModelScope)
+    val imagesPagingData = imagesRepository.imagesFlow
+        .flowOn(context = Dispatchers.IO)
+        .cachedIn(scope = viewModelScope)
 
     private val _selectedImage = MutableStateFlow<Image?>(value = null)
     val selectedImage = _selectedImage.asStateFlow()

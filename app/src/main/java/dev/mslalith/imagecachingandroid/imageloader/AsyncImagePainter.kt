@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AsyncImagePainter(
     private val imageLoader: ImageLoader,
@@ -50,7 +51,9 @@ class AsyncImagePainter(
                 ?: kotlin.run {
                     painter = imageLoader.execute(imageRequest = ImageRequest.Drawable(id = placeholder)).toPainter()
 
-                    val loadedBitmap = imageLoader.execute(imageRequest = imageRequest)
+                    val loadedBitmap = withContext(Dispatchers.IO) {
+                        imageLoader.execute(imageRequest = imageRequest)
+                    }
 
                     painter = loadedBitmap.toPainter()
                 }
