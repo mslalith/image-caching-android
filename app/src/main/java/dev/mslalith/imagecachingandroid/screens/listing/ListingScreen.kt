@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import dev.mslalith.imagecachingandroid.R
 import dev.mslalith.imagecachingandroid.data.dto.Image
@@ -92,28 +93,27 @@ fun ListingScreen(
                 }
             }
 
-            if (pagingItems.loadState.refresh != LoadState.Loading) {
-                LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(count = 2),
-                    state = gridState,
-                    horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
-                    verticalItemSpacing = 8.dp
-                ) {
-                    items(
-                        count = pagingItems.itemCount,
-                    ) { index ->
-                        pagingItems[index]?.let { image ->
-                            ImageItem(
-                                image = image,
-                                onItemClick = onItemClick,
-                                modifier = Modifier.animateItemPlacement()
-                            )
-//                            CoilImageItem(
-//                                image = image,
-//                                onItemClick = onItemClick,
-//                                modifier = Modifier.animateItemPlacement()
-//                            )
-                        }
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(count = 2),
+                state = gridState,
+                horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+                verticalItemSpacing = 8.dp
+            ) {
+                items(
+                    count = pagingItems.itemCount,
+                    key = pagingItems.itemKey { it.id }
+                ) { index ->
+                    pagingItems[index]?.let { image ->
+                        ImageItem(
+                            image = image,
+                            onItemClick = onItemClick,
+                            modifier = Modifier.animateItemPlacement()
+                        )
+//                        CoilImageItem(
+//                            image = image,
+//                            onItemClick = onItemClick,
+//                            modifier = Modifier.animateItemPlacement()
+//                        )
                     }
                 }
             }
@@ -140,6 +140,7 @@ private fun ImageItem(
             .clickable { onItemClick(image) }
     ) {
         Image(
+            modifier = Modifier.fillMaxWidth(),
             painter = painter,
             contentDescription = null,
             contentScale = ContentScale.FillWidth
@@ -167,8 +168,10 @@ private fun CoilImageItem(
             .clickable { onItemClick(image) }
     ) {
         AsyncImage(
+            modifier = Modifier.fillMaxWidth(),
             model = request,
-            contentDescription = null
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
         )
     }
 }
