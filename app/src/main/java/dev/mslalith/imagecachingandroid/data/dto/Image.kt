@@ -1,6 +1,6 @@
 package dev.mslalith.imagecachingandroid.data.dto
 
-import dev.mslalith.imagecachingandroid.data.model.local.ImageEntity
+import dev.mslalith.imagecachingandroid.data.model.remote.ImageResponse
 
 data class Image(
     val id: Long,
@@ -14,14 +14,14 @@ data class Image(
     val alt: String
 )
 
-fun ImageEntity.toImage() = Image(
+fun ImageResponse.toImage() = Image(
     id = id,
     width = width,
     height = height,
     photographerName = photographerName,
     photographerUrl = photographerUrl,
     photographerId = photographerId,
-    imageUrl = imageUrl.large,
+    imageUrl = imageUrlResponse.large,
     liked = liked,
     alt = alt
 )

@@ -35,16 +35,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(route = Screen.Listing.route) {
                         val pagingItems = viewModel.imagesPagingData.collectAsLazyPagingItems()
-                        val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
                         ListingScreen(
                             pagingItems = pagingItems,
-                            searchQuery = searchQuery,
                             onItemClick = {
                                 viewModel.onImageClick(image = it)
                                 navController.navigate(Screen.Detail.route)
-                            },
-                            onSearchQueryChange = viewModel::onSearchQueryChange
+                            }
                         )
                     }
                     composable(

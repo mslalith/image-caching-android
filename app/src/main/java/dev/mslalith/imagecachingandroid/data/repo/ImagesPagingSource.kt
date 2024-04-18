@@ -14,6 +14,7 @@ class ImagesPagingSource @Inject constructor(
 
     companion object {
         private const val INITIAL_PAGE = 1
+        const val PER_PAGE = 20
     }
 
     override fun getRefreshKey(state: PagingState<Int, ImageResponse>): Int? {
@@ -29,7 +30,7 @@ class ImagesPagingSource @Inject constructor(
             val page = params.key ?: INITIAL_PAGE
             val result = withContext(Dispatchers.IO) {
                 println("#test: calling api for page: $page")
-                imagesApi.fetchImages(query = "", page = page, perPage = 20)
+                imagesApi.fetchImages(query = "", page = page, perPage = PER_PAGE)
             }
 
             result.fold(

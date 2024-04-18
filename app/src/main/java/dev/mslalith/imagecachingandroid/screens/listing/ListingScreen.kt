@@ -5,11 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,39 +18,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import coil.compose.AsyncImage
 import dev.mslalith.imagecachingandroid.R
 import dev.mslalith.imagecachingandroid.data.dto.Image
 import dev.mslalith.imagecachingandroid.imageloader.ImageRequest
 import dev.mslalith.imagecachingandroid.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListingScreen(
     pagingItems: LazyPagingItems<Image>,
-    searchQuery: String,
     onItemClick: (Image) -> Unit,
-    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val gridState = rememberLazyStaggeredGridState()
@@ -107,11 +95,6 @@ fun ListingScreen(
                             onItemClick = onItemClick,
                             modifier = Modifier.animateItemPlacement()
                         )
-//                        CoilImageItem(
-//                            image = image,
-//                            onItemClick = onItemClick,
-//                            modifier = Modifier.animateItemPlacement()
-//                        )
                     }
                 }
 
@@ -151,34 +134,6 @@ private fun ImageItem(
         Image(
             modifier = Modifier.fillMaxWidth(),
             painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth
-        )
-    }
-}
-
-@Composable
-private fun CoilImageItem(
-    image: Image,
-    onItemClick: (Image) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val request = remember(context) {
-        coil.request.ImageRequest.Builder(context)
-            .data(image.imageUrl)
-            .placeholder(R.drawable.ic_image_placeholder)
-            .error(R.drawable.ic_image_broken)
-            .build()
-    }
-    Card(
-        modifier = modifier
-            .animateContentSize()
-            .clickable { onItemClick(image) }
-    ) {
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth(),
-            model = request,
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
