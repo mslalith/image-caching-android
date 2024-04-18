@@ -56,29 +56,29 @@ fun ListingScreen(
                 .padding(paddingValues = innerPadding)
                 .padding(horizontal = 12.dp),
         ) {
-            SearchBar(
-                modifier = Modifier.fillMaxWidth(),
-                query = searchQuery,
-                onQueryChange = onSearchQueryChange,
-                onSearch = { onSearchQueryChange(searchQuery) },
-                active = false,
-                onActiveChange = {},
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = null,
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_settings),
-                            contentDescription = null,
-                        )
-                    }
-                },
-                content = {}
-            )
+//            SearchBar(
+//                modifier = Modifier.fillMaxWidth(),
+//                query = searchQuery,
+//                onQueryChange = onSearchQueryChange,
+//                onSearch = { onSearchQueryChange(searchQuery) },
+//                active = false,
+//                onActiveChange = {},
+//                leadingIcon = {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.ic_search),
+//                        contentDescription = null,
+//                    )
+//                },
+//                trailingIcon = {
+//                    IconButton(onClick = {}) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.ic_settings),
+//                            contentDescription = null,
+//                        )
+//                    }
+//                },
+//                content = {}
+//            )
 
             when (pagingItems.loadState.refresh) {
                 is LoadState.Error -> Unit
