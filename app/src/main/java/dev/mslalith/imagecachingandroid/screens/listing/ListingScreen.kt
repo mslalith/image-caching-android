@@ -7,20 +7,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,22 +42,8 @@ fun ListingScreen(
     onItemClick: (Image) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val gridState = rememberLazyStaggeredGridState()
-    val scope = rememberCoroutineScope()
-
     Scaffold(
-        modifier = modifier.fillMaxSize(),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        gridState.animateScrollBy(2000f)
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
-            }
-        }
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
 
         Box(
@@ -84,7 +68,6 @@ fun ListingScreen(
                 }
             } else {
                 ImagesList(
-                    gridState = gridState,
                     pagingItems = pagingItems,
                     onItemClick = onItemClick
                 )
@@ -96,44 +79,89 @@ fun ListingScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ImagesList(
-    gridState: LazyStaggeredGridState,
     pagingItems: LazyPagingItems<Image>,
     onItemClick: (Image) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyVerticalStaggeredGrid(
-        modifier = modifier,
-        columns = StaggeredGridCells.Fixed(count = 2),
-        state = gridState,
-        horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
-        verticalItemSpacing = 8.dp
-    ) {
-        items(
-            count = pagingItems.itemCount,
-            key = pagingItems.itemKey { it.id }
-        ) { index ->
-            pagingItems[index]?.let { image ->
-                ImageItem(
-                    image = image,
-                    onItemClick = onItemClick,
-                    modifier = Modifier.animateItemPlacement()
-                )
+    val scope = rememberCoroutineScope()
+    val gridState = rememberLazyStaggeredGridState()
+
+    Column {
+        LazyVerticalStaggeredGrid(
+            modifier = modifier.weight(weight = 1f),
+            columns = StaggeredGridCells.Fixed(count = 2),
+            state = gridState,
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+            verticalItemSpacing = 8.dp
+        ) {
+            items(
+                count = pagingItems.itemCount,
+                key = pagingItems.itemKey { it.id }
+            ) { index ->
+                pagingItems[index]?.let { image ->
+                    ImageItem(
+                        image = image,
+                        onItemClick = onItemClick,
+                        modifier = Modifier.animateItemPlacement()
+                    )
+                }
+            }
+
+            if (pagingItems.loadState.append == LoadState.Loading) {
+                item(
+                    span = StaggeredGridItemSpan.FullLine
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
 
-        if (pagingItems.loadState.append == LoadState.Loading) {
-            item(
-                span = StaggeredGridItemSpan.FullLine
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
+        ) {
+            SimpleButton(
+                modifier = Modifier.weight(weight = 1f),
+                text = "Start",
+                onClick = {
+                    scope.launch {
+                        gridState.animateScrollToItem(index = 0)
+                    }
                 }
-            }
+            )
+            SimpleButton(
+                modifier = Modifier.weight(weight = 1f),
+                text = "Up",
+                onClick = {
+                    scope.launch {
+                        gridState.animateScrollBy(value = -2000f)
+                    }
+                }
+            )
+            SimpleButton(
+                modifier = Modifier.weight(weight = 1f),
+                text = "Down",
+                onClick = {
+                    scope.launch {
+                        gridState.animateScrollBy(value = 2000f)
+                    }
+                }
+            )
+            SimpleButton(
+                modifier = Modifier.weight(weight = 1f),
+                text = "End",
+                onClick = {
+                    scope.launch {
+                        gridState.animateScrollToItem(index = pagingItems.itemCount - 1)
+                    }
+                }
+            )
         }
     }
 }
@@ -162,5 +190,19 @@ private fun ImageItem(
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
+    }
+}
+
+@Composable
+private fun SimpleButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Text(text = text)
     }
 }
