@@ -10,7 +10,7 @@ If above is not provided, Build will fail with proper instructions to do the abo
 
 ## Run
 - Ensure above steps are completed.
-- Run app
+- This is built with Jetpack Compose. As this app deals with images, it is recommended to run app in release mode (as Compose has a lot going on under the hood which impacts performance)
 
 ## TODO
 - [x] Add Disk caching
