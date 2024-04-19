@@ -15,6 +15,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.security.MessageDigest
+import kotlin.math.roundToInt
 
 class ImageLoader(
     private val context: Context,
@@ -68,8 +69,19 @@ class ImageLoader(
     private suspend fun ImageRequest.Network.toBitmap(): Bitmap? = withContext(Dispatchers.IO) {
         try {
             imageDownloadLock.withPermit {
+                val decodeOptions = URL(url).openStream().use { inputStream ->
+                    BitmapFactory.Options().apply {
+                        inJustDecodeBounds = true
+                        BitmapFactory.decodeStream(inputStream, null, this)
+                    }
+                }
                 URL(url).openStream().use { inputStream ->
-                    BitmapFactory.decodeStream(inputStream)
+                    val options = BitmapFactory.Options().apply {
+                        inJustDecodeBounds = false
+                        val (reqWidth, reqHeight) = decodeOptions.downScaleBy(scale = 0.7f)
+                        inSampleSize = calculateInSampleSize(reqWidth, reqHeight)
+                    }
+                    BitmapFactory.decodeStream(inputStream, null, options)
                 }
             }
         } catch (ex: Exception) {
@@ -82,4 +94,30 @@ class ImageLoader(
         val drawable = ContextCompat.getDrawable(context, id) ?: ColorDrawable(Color.TRANSPARENT)
         drawable.toBitmap()
     }
+}
+
+private fun BitmapFactory.Options.calculateInSampleSize(reqWidth: Int, reqHeight: Int): Int {
+    // Raw height and width of image
+    val (height: Int, width: Int) = run { outHeight to outWidth }
+    var inSampleSize = 1
+
+    if (height > reqHeight || width > reqWidth) {
+
+        val halfHeight: Int = height / 2
+        val halfWidth: Int = width / 2
+
+        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+        // height and width larger than the requested height and width.
+        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+            inSampleSize *= 2
+        }
+    }
+
+    return inSampleSize
+}
+
+private fun BitmapFactory.Options.downScaleBy(scale: Float): Pair<Int, Int> {
+    val width = outWidth * scale
+    val height = outHeight * scale
+    return width.roundToInt() to height.roundToInt()
 }
