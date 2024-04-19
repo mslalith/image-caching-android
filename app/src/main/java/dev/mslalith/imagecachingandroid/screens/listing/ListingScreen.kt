@@ -90,11 +90,11 @@ private fun ImagesList(
 ) {
     val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = modifier
-    ) {
+//    Column(
+//        modifier = modifier
+//    ) {
         LazyVerticalStaggeredGrid(
-            modifier = Modifier.weight(weight = 1f),
+//            modifier = Modifier.weight(weight = 1f),
             columns = StaggeredGridCells.Fixed(count = 2),
             state = gridState,
             horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
@@ -129,49 +129,49 @@ private fun ImagesList(
             }
         }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
-        ) {
-            val scrollBy = 1500f
-
-            SimpleButton(
-                modifier = Modifier.weight(weight = 1f),
-                text = "Start",
-                onClick = {
-                    scope.launch {
-                        gridState.animateScrollToItem(index = 0)
-                    }
-                }
-            )
-            SimpleButton(
-                modifier = Modifier.weight(weight = 1f),
-                text = "Up",
-                onClick = {
-                    scope.launch {
-                        gridState.animateScrollBy(value = -scrollBy)
-                    }
-                }
-            )
-            SimpleButton(
-                modifier = Modifier.weight(weight = 1f),
-                text = "Down",
-                onClick = {
-                    scope.launch {
-                        gridState.animateScrollBy(value = scrollBy)
-                    }
-                }
-            )
-            SimpleButton(
-                modifier = Modifier.weight(weight = 1f),
-                text = "End",
-                onClick = {
-                    scope.launch {
-                        gridState.animateScrollToItem(index = pagingItems.itemCount - 1)
-                    }
-                }
-            )
-        }
-    }
+//        Row(
+//            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
+//        ) {
+//            val scrollBy = 1500f
+//
+//            SimpleButton(
+//                modifier = Modifier.weight(weight = 1f),
+//                text = "Start",
+//                onClick = {
+//                    scope.launch {
+//                        gridState.animateScrollToItem(index = 0)
+//                    }
+//                }
+//            )
+//            SimpleButton(
+//                modifier = Modifier.weight(weight = 1f),
+//                text = "Up",
+//                onClick = {
+//                    scope.launch {
+//                        gridState.animateScrollBy(value = -scrollBy)
+//                    }
+//                }
+//            )
+//            SimpleButton(
+//                modifier = Modifier.weight(weight = 1f),
+//                text = "Down",
+//                onClick = {
+//                    scope.launch {
+//                        gridState.animateScrollBy(value = scrollBy)
+//                    }
+//                }
+//            )
+//            SimpleButton(
+//                modifier = Modifier.weight(weight = 1f),
+//                text = "End",
+//                onClick = {
+//                    scope.launch {
+//                        gridState.animateScrollToItem(index = pagingItems.itemCount - 1)
+//                    }
+//                }
+//            )
+//        }
+//    }
 }
 
 @Composable
