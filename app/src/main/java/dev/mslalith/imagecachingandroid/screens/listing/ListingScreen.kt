@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -37,7 +38,6 @@ import dev.mslalith.imagecachingandroid.imageloader.ImageRequest
 import dev.mslalith.imagecachingandroid.imageloader.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListingScreen(
     pagingItems: LazyPagingItems<Image>,
@@ -67,40 +67,6 @@ fun ListingScreen(
                 .padding(paddingValues = innerPadding)
                 .padding(horizontal = 12.dp),
         ) {
-            LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(count = 2),
-                state = gridState,
-                horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
-                verticalItemSpacing = 8.dp
-            ) {
-                items(
-                    count = pagingItems.itemCount,
-                    key = pagingItems.itemKey { it.id }
-                ) { index ->
-                    pagingItems[index]?.let { image ->
-                        ImageItem(
-                            image = image,
-                            onItemClick = onItemClick,
-                            modifier = Modifier.animateItemPlacement()
-                        )
-                    }
-                }
-
-                if (pagingItems.loadState.append == LoadState.Loading) {
-                    item(
-                        span = StaggeredGridItemSpan.FullLine
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-                }
-            }
 
             if (pagingItems.loadState.refresh == LoadState.Loading) {
                 Box(
@@ -115,6 +81,57 @@ fun ListingScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "No images to show")
+                }
+            } else {
+                ImagesList(
+                    gridState = gridState,
+                    pagingItems = pagingItems,
+                    onItemClick = onItemClick
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ImagesList(
+    gridState: LazyStaggeredGridState,
+    pagingItems: LazyPagingItems<Image>,
+    onItemClick: (Image) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalStaggeredGrid(
+        modifier = modifier,
+        columns = StaggeredGridCells.Fixed(count = 2),
+        state = gridState,
+        horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+        verticalItemSpacing = 8.dp
+    ) {
+        items(
+            count = pagingItems.itemCount,
+            key = pagingItems.itemKey { it.id }
+        ) { index ->
+            pagingItems[index]?.let { image ->
+                ImageItem(
+                    image = image,
+                    onItemClick = onItemClick,
+                    modifier = Modifier.animateItemPlacement()
+                )
+            }
+        }
+
+        if (pagingItems.loadState.append == LoadState.Loading) {
+            item(
+                span = StaggeredGridItemSpan.FullLine
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }
