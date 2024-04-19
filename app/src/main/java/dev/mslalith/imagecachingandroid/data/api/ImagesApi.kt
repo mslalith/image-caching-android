@@ -34,8 +34,8 @@ class ImagesApiImpl @Inject constructor(
             parameter("page", page)
             parameter("per_page", perPage)
         }.body<ImagesResponse>()
-//        delay(2000)
-//        val response = localResponseOf(page)//dummyImagesResponse(page, perPage)
+//        kotlinx.coroutines.delay(if (page == 1) 1000 else 6000)
+//        val response = localResponseOf(page) // dummyImagesResponse(page, perPage)
         Result.success(response)
     } catch (ex: Exception) {
         ex.printStackTrace()

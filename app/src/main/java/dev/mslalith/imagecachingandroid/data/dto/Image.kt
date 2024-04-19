@@ -21,7 +21,7 @@ fun ImageResponse.toImage() = Image(
     photographerName = photographerName,
     photographerUrl = photographerUrl,
     photographerId = photographerId,
-    imageUrl = imageUrlResponse.large,
+    imageUrl = imageUrlResponse.medium,
     liked = liked,
     alt = alt
 )

@@ -33,13 +33,15 @@ class ImagesPagingSource @Inject constructor(
 
             val page = params.key ?: INITIAL_PAGE
             val result = withContext(Dispatchers.IO) {
-                println("#test: calling api for page: $page")
-                imagesApi.fetchImages(query = "", page = page, perPage = PER_PAGE)
+                imagesApi.fetchImages(
+                    query = "",
+                    page = page,
+                    perPage = PER_PAGE
+                )
             }
 
             result.fold(
                 onSuccess = {
-                    println("#test: images loaded for page: $page: ${it.photos.size}")
                     val imagesResponse = it.copy(
                         photos = it.photos.map { imageResponse ->
                             imageResponse.copy(id = imageResponse.id + System.currentTimeMillis())

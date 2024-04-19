@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -42,6 +43,8 @@ fun ListingScreen(
     onItemClick: (Image) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val gridState = rememberLazyStaggeredGridState()
+
     Scaffold(
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
@@ -68,6 +71,7 @@ fun ListingScreen(
                 }
             } else {
                 ImagesList(
+                    gridState = gridState,
                     pagingItems = pagingItems,
                     onItemClick = onItemClick
                 )
@@ -79,16 +83,18 @@ fun ListingScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ImagesList(
+    gridState: LazyStaggeredGridState,
     pagingItems: LazyPagingItems<Image>,
     onItemClick: (Image) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    val gridState = rememberLazyStaggeredGridState()
 
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         LazyVerticalStaggeredGrid(
-            modifier = modifier.weight(weight = 1f),
+            modifier = Modifier.weight(weight = 1f),
             columns = StaggeredGridCells.Fixed(count = 2),
             state = gridState,
             horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
@@ -126,6 +132,8 @@ private fun ImagesList(
         Row(
             horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
         ) {
+            val scrollBy = 1500f
+
             SimpleButton(
                 modifier = Modifier.weight(weight = 1f),
                 text = "Start",
@@ -140,7 +148,7 @@ private fun ImagesList(
                 text = "Up",
                 onClick = {
                     scope.launch {
-                        gridState.animateScrollBy(value = -2000f)
+                        gridState.animateScrollBy(value = -scrollBy)
                     }
                 }
             )
@@ -149,7 +157,7 @@ private fun ImagesList(
                 text = "Down",
                 onClick = {
                     scope.launch {
-                        gridState.animateScrollBy(value = 2000f)
+                        gridState.animateScrollBy(value = scrollBy)
                     }
                 }
             )

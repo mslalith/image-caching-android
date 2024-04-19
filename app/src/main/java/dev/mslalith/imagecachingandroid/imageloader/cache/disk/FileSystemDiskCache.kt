@@ -15,7 +15,7 @@ class FileSystemDiskCache @Inject constructor(
 ) : DiskCache {
 
     private val cacheDir = File(context.cacheDir, "images")
-    private val writeLock = Semaphore(permits = 20)
+    private val writeLock = Semaphore(permits = 60)
 
     init {
         if (!cacheDir.exists()) cacheDir.mkdirs()
@@ -32,7 +32,7 @@ class FileSystemDiskCache @Inject constructor(
         writeLock.withPermit {
             val file = File(cacheDir, key)
             FileOutputStream(file).use {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, it)
             }
         }
     }

@@ -22,7 +22,7 @@ class ImageLoader(
     private val diskCache: DiskCache
 ) {
     private val messageDigest = MessageDigest.getInstance("MD5")
-    private val imageDownloadLock = Semaphore(permits = 10)
+    private val imageDownloadLock = Semaphore(permits = 60)
 
     fun getCachedBitmap(imageRequest: ImageRequest): Bitmap? {
         val key = imageRequest.key()
@@ -41,8 +41,8 @@ class ImageLoader(
         return null
     }
 
-    suspend fun execute(imageRequest: ImageRequest): Bitmap {
-        return when (imageRequest) {
+    suspend fun execute(imageRequest: ImageRequest): Bitmap = withContext(Dispatchers.IO) {
+        when (imageRequest) {
             is ImageRequest.Network -> imageRequest.toBitmap() ?: kotlin.run {
                 ImageRequest.Drawable(id = imageRequest.errorId).toBitmap()
             }
