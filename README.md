@@ -14,6 +14,6 @@ If above is not provided, Build will fail with proper instructions to do the abo
 
 ## TODO
 - [x] Add Disk caching
-- [x] Search images
 - [x] Pagination
+- [ ] Search images
 - [ ] Settings
