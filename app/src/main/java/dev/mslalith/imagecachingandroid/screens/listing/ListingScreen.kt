@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -85,10 +86,14 @@ fun ListingScreen(
                     }
                 }
 
-                item {
-                    if (pagingItems.loadState.append is LoadState.Loading) {
+                if (pagingItems.loadState.append == LoadState.Loading) {
+                    item(
+                        span = StaggeredGridItemSpan.FullLine
+                    ) {
                         Box(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()
