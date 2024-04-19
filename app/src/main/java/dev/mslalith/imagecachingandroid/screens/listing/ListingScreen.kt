@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -61,24 +61,11 @@ fun ListingScreen(
         }
     ) { innerPadding ->
 
-        Column(
+        Box(
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
                 .padding(horizontal = 12.dp),
         ) {
-            when (pagingItems.loadState.refresh) {
-                is LoadState.Error -> Unit
-                is LoadState.NotLoading -> Unit
-                LoadState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(count = 2),
                 state = gridState,
@@ -107,6 +94,22 @@ fun ListingScreen(
                             CircularProgressIndicator()
                         }
                     }
+                }
+            }
+
+            if (pagingItems.loadState.refresh == LoadState.Loading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (pagingItems.itemCount == 0) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No images to show")
                 }
             }
         }

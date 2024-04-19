@@ -4,12 +4,14 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import dev.mslalith.imagecachingandroid.data.api.ImagesApi
 import dev.mslalith.imagecachingandroid.data.model.remote.ImageResponse
+import dev.mslalith.imagecachingandroid.util.NetworkMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ImagesPagingSource @Inject constructor(
-     private val imagesApi: ImagesApi
+    private val imagesApi: ImagesApi,
+    private val networkMonitor: NetworkMonitor
 ) : PagingSource<Int, ImageResponse>() {
 
     companion object {
@@ -27,6 +29,8 @@ class ImagesPagingSource @Inject constructor(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ImageResponse> {
         return try {
+            if (!networkMonitor.isDeviceOnline()) return LoadResult.Error(IllegalStateException("Device is offline"))
+
             val page = params.key ?: INITIAL_PAGE
             val result = withContext(Dispatchers.IO) {
                 println("#test: calling api for page: $page")
