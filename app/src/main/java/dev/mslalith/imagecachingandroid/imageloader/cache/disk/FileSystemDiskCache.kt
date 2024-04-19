@@ -21,7 +21,7 @@ class FileSystemDiskCache @Inject constructor(
         if (!cacheDir.exists()) cacheDir.mkdirs()
     }
 
-    override fun get(key: String): Bitmap? {
+    override suspend fun get(key: String): Bitmap? {
         val file = File(cacheDir, key)
         return if (file.exists()) {
             BitmapFactory.decodeFile(file.absolutePath)

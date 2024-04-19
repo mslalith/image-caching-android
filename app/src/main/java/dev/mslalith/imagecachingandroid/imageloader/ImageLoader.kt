@@ -24,7 +24,7 @@ class ImageLoader(
     private val messageDigest = MessageDigest.getInstance("MD5")
     private val imageDownloadLock = Semaphore(permits = 60)
 
-    fun getCachedBitmap(imageRequest: ImageRequest): Bitmap? {
+    suspend fun getCachedBitmap(imageRequest: ImageRequest): Bitmap? {
         val key = imageRequest.key()
 
         // check in-memory

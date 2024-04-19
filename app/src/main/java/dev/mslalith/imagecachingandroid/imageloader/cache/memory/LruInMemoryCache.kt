@@ -6,8 +6,14 @@ import javax.inject.Inject
 
 class LruInMemoryCache @Inject constructor() : InMemoryCache {
 
-    // TODO IF TIME PERMITS: configure size from available memory
-    private val cacheMap = LruCache<String, Bitmap>(maxSize = 200)
+    private val cacheMap by lazy {
+        val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
+        val cacheSize = maxMemory / 8
+
+        object : LruCache<String, Bitmap>(maxSize = cacheSize) {
+            override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
+        }
+    }
 
     override fun get(key: String): Bitmap? = cacheMap[key]
 
